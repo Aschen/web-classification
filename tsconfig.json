@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@rrweb/types": ["node_modules/@rrweb/types"]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
