@@ -1,14 +1,14 @@
 # e-commerce
 
-product list
-product details
-cart
+e-commerce product list
+e-commerce product details
+e-commerce cart
 about company
 faq
 press
 privacy policy
 terms and conditions
 accessibility statement
-returns and exchanges
+e-commerce returns and exchanges
 assistance
 blog

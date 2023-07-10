@@ -15,9 +15,14 @@ export class Crawler {
   }
 
   get siteDir() {
-    const url = new URL(this.inputLinks[0]);
+    try {
+      const url = new URL(this.inputLinks[0]);
 
-    return `./sites/${url.host}`;
+      return `./sites/${url.host}`;
+    } catch (error) {
+      console.log(this.inputLinks[0]);
+      throw error;
+    }
   }
 
   get linksFile() {
@@ -37,7 +42,8 @@ export class Crawler {
       );
 
       for (let i = 0; i < this.linksToVisit.length; i++) {
-        console.log(`Process link ${i}/${this.linksToVisit.length}`);
+        process.stdout.write(`Process link ${i}/${this.linksToVisit.length}`);
+        process.stdout.write('\r');
 
         const link = this.linksToVisit[i];
 
@@ -58,7 +64,7 @@ export class Crawler {
         }
 
         writeFileSync(
-          `${this.pageDir(link)}/description.json`,
+          `${this.pageDir(link)}/features.json`,
           JSON.stringify(linkDescription, null, 2)
         );
 
@@ -66,6 +72,7 @@ export class Crawler {
 
         this.writeState();
       }
+      process.stdout.write('\n');
     } catch (error) {
       console.error(error);
       throw error;
