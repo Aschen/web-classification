@@ -1,26 +1,23 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
+import { PagesSampler, SitemapReader } from './collectors/index.js';
+
 export class Crawler {
-  constructor(inputLinks, scrappers = []) {
-    this.inputLinks = inputLinks;
+  constructor(site, scrappers = []) {
+    this.site = site;
+    this.inputLinks = [];
     this.links = {};
     this.linksToVisit = [];
     this.scrappers = scrappers;
-
-    if (existsSync(this.linksFile)) {
-      this.resumeCrawling();
-    } else {
-      this.createCrawling();
-    }
   }
 
   get siteDir() {
     try {
-      const url = new URL(this.inputLinks[0]);
+      const url = new URL(this.site);
 
       return `./sites/${url.host}`;
     } catch (error) {
-      console.log(this.inputLinks[0]);
+      console.log(this.site);
       throw error;
     }
   }
@@ -29,7 +26,28 @@ export class Crawler {
     return `${this.siteDir}/links.json`;
   }
 
+  async getLinks() {
+    const reader = new SitemapReader(this.site);
+
+    const { links, mainLinks } = await reader.collect();
+    reader.save();
+
+    const sampler = new PagesSampler(links, {
+      leafSampleSize: 3,
+      maxBranchSize: 10,
+    });
+
+    this.inputLinks = sampler.sample(mainLinks);
+    sampler.save();
+  }
+
   async start() {
+    if (existsSync(this.linksFile)) {
+      this.resumeCrawling();
+    } else {
+      await this.createCrawling();
+    }
+
     try {
       for (const scrapper of this.scrappers) {
         await scrapper.init();
@@ -53,14 +71,22 @@ export class Crawler {
 
         mkdirSync(this.pageDir(link), { recursive: true });
 
-        for (const scrapper of this.scrappers) {
-          const scrapperDescription = await scrapper.scrapePage(
-            link,
-            this.pageDir(link),
-            this.pageName(link)
-          );
+        try {
+          for (const scrapper of this.scrappers) {
+            const scrapperDescription = await scrapper.scrapePage(
+              link,
+              this.pageDir(link),
+              this.pageName(link)
+            );
 
-          linkDescription = { ...scrapperDescription, ...linkDescription };
+            linkDescription = { ...scrapperDescription, ...linkDescription };
+          }
+
+          this.links[link] = true;
+        } catch (error) {
+          console.log('ERROR');
+          this.links[link] = error.message;
+          console.log(error);
         }
 
         writeFileSync(
@@ -68,13 +94,11 @@ export class Crawler {
           JSON.stringify(linkDescription, null, 2)
         );
 
-        this.links[link] = true;
-
         this.writeState();
       }
       process.stdout.write('\n');
     } catch (error) {
-      console.error(error);
+      console.error(`Cannot scrap ${link}: ${error.message}`);
       throw error;
     } finally {
       for (const scrapper of this.scrappers) {
@@ -88,22 +112,26 @@ export class Crawler {
   }
 
   resumeCrawling() {
+    console.log('Resuming crawling');
+
     this.links = JSON.parse(readFileSync(this.linksFile, 'utf-8'));
 
     for (const link of this.inputLinks) {
       if (this.links[link] === undefined) {
-        this.links[link] = false;
+        this.links[link] = null;
       }
     }
 
     this.prepareCrawling();
   }
 
-  createCrawling() {
+  async createCrawling() {
     mkdirSync(this.siteDir, { recursive: true });
 
+    await this.getLinks();
+
     for (const link of this.inputLinks) {
-      this.links[link] = false;
+      this.links[link] = null;
     }
 
     this.writeState();
@@ -113,7 +141,7 @@ export class Crawler {
 
   prepareCrawling() {
     this.linksToVisit = Object.entries(this.links)
-      .filter(([, visited]) => visited === false)
+      .filter(([, visited]) => visited !== true)
       .map(([link]) => link);
   }
 

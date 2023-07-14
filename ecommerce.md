@@ -30,9 +30,9 @@ KO (no sitemap) https://www.samash.com
 
 https://www.cacklehatchery.com
 https://xotic.us
-https://galaxy.astrostyle.com
+KO (too many req) https://galaxy.astrostyle.com
 https://www.medievalcollectibles.com
-https://alansfactoryoutlet.com
+KO (too weird) https://alansfactoryoutlet.com
 
 # PrestaShop
 

@@ -57,7 +57,11 @@ export class SitemapReader {
       try {
         const url = new URL(href);
 
-        if (url.href.includes('.jpg') || url.href.includes('.png')) {
+        if (
+          url.href.includes('.jpg') ||
+          url.href.includes('.png') ||
+          url.href.includes('.atoms')
+        ) {
           return;
         }
 
@@ -121,7 +125,11 @@ export class SitemapReader {
       try {
         const url = new URL($(element).text());
 
-        if (url.href.includes('.jpg') || url.href.includes('.png')) {
+        if (
+          url.href.includes('.jpg') ||
+          url.href.includes('.png') ||
+          url.href.includes('.pdf')
+        ) {
           return;
         }
 

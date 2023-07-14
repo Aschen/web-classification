@@ -5,12 +5,13 @@ import { chromium } from 'playwright';
 import * as esbuild from 'esbuild';
 
 export class PlaywrightScrapper {
-  constructor(options = { html: true, screenshot: true }) {
+  constructor(options = {}) {
     this.browser = null;
     this.context = null;
     this.page = null;
 
-    this.options = options;
+    const defaultOptions = { html: true, screenshot: true };
+    this.options = { ...defaultOptions, ...options };
   }
 
   async init() {
@@ -21,17 +22,17 @@ export class PlaywrightScrapper {
     this.context = await this.browser.newContext();
 
     await this.context.addInitScript(await this.getInitScript());
+
+    this.page = await this.context.newPage();
   }
 
   async scrapePage(pageUrl, pageDir, pageName) {
-    const page = await this.context.newPage();
-
     const description = {
       html: undefined,
       screenshot: undefined,
     };
 
-    await page.goto(pageUrl);
+    await this.page.goto(pageUrl);
 
     if (this.options.html) {
       const htmlPath = `${pageDir}/${pageName}.html`;
@@ -48,7 +49,7 @@ export class PlaywrightScrapper {
     if (this.options.screenshot) {
       const screenshotPath = `${pageDir}/${pageName}.png`;
 
-      await page.screenshot({
+      await this.page.screenshot({
         path: screenshotPath,
         fullPage: true,
       });
@@ -56,18 +57,20 @@ export class PlaywrightScrapper {
       description.screenshot = screenshotPath;
     }
 
-    await page.close();
-
     return description;
   }
 
   async dispose() {
-    if (this.browser !== null) {
-      await this.browser.close();
+    if (this.page !== null) {
+      await this.page.close();
     }
 
     if (this.context !== null) {
       await this.context.close();
+    }
+
+    if (this.browser !== null) {
+      await this.browser.close();
     }
   }
 

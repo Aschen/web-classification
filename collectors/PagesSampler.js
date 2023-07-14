@@ -65,6 +65,7 @@ export class PagesSampler {
   createTree() {
     this.tree = {
       root: true,
+      name: 'root',
       children: [],
     };
 
