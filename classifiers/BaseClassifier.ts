@@ -18,7 +18,7 @@ export type PageFeatures = {
 };
 
 export abstract class BaseClassifier {
-  protected categories: Categories;
+  public categories: Categories;
   public name: string;
   public options: {
     estimateOnly: boolean;
