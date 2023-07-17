@@ -13,6 +13,7 @@ export type PageFeatures = {
       answer: string[];
       tokens?: number;
       cost?: number;
+      correct?: boolean;
     }
   >;
 };

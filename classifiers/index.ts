@@ -4,3 +4,5 @@ export * from './BaseClassifier';
 export * from './GPTClassifier';
 export * from './EmbeddingsClassifier';
 export * from './PagesClassifier';
+export * from './BARTClassifier';
+export * from './HFClassifier';

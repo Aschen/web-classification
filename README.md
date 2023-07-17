@@ -6,11 +6,12 @@
 - split input and give it
 - similarity between page structure
 - statistics on word appearance on a page category
+- parallel classifiers for performances
 
 ## Classification
 
 - classification with embeddings: utiliser mots plus fréquents comme document pour tester
-- classification nearest neighboors, support vector machine
+- classification support vector machine
 - classification with word stats and bayesien
 - reduce number of labels by comparing page embeddings and categories embeddings
 - classify with LLM a sample of website then use another classification trained with the sample
@@ -18,7 +19,6 @@
 ### LLM
 
 - test on a new website
-- change prompt data order for priority
 
 ## Qualimetry
 

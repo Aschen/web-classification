@@ -153,7 +153,7 @@ export class GPTClassifier extends BaseClassifier {
   }
 
   async init() {
-    const template = this.prompt.template(this.categories.labels);
+    const template = this.prompt.template(this.categories);
 
     this.parser = new AnswerParser(this.categories.labels);
 

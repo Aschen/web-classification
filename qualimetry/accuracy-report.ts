@@ -1,13 +1,16 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 
-import { plot } from 'nodeplotlib';
+import { PlotData, plot } from 'nodeplotlib';
 
 import {
   BaseClassifier,
   CATEGORIES_A,
   CATEGORIES_B,
+  CATEGORIES_C,
+  CATEGORIES_D,
   GPTClassifier,
   GPTModels,
+  PROMPT_A,
   PROMPT_B,
   PageFeatures,
 } from '../classifiers';
@@ -15,14 +18,23 @@ import { getSitesEntries } from '../tools';
 
 const sites = getSitesEntries(process.argv.slice(2));
 
-function plotAccuracy(classifier: BaseClassifier) {
+const classifiersAccuracy: {
+  [classifier: string]: {
+    [category: string]: {
+      total: number;
+      success: number;
+    };
+  };
+} = {};
+
+function plotClassifierAccuracy(classifier: BaseClassifier) {
   const {
     labels,
     successesByCategory,
     errorsByCategory,
     totalByCategory,
     unusedLabels,
-  } = computeAccuracy(classifier);
+  } = extractStats(classifier);
 
   plot(
     [
@@ -92,12 +104,60 @@ function plotAccuracy(classifier: BaseClassifier) {
   );
 }
 
+function plotMetaAccuracy(classifiers: BaseClassifier[]) {
+  const classifierNames = [];
+  const successSeries = [];
+  const errorSeries = [];
+
+  for (const classifier of classifiers) {
+    const { successesTotal, errorsTotal } = extractStats(classifier);
+
+    const total = successesTotal + errorsTotal;
+
+    classifierNames.push(classifier.name);
+    successSeries.push((successesTotal * 100) / total);
+    errorSeries.push((errorsTotal * 100) / total);
+  }
+
+  plot(
+    [
+      {
+        x: classifierNames,
+        y: successSeries,
+        name: 'Success',
+        type: 'bar',
+      },
+      {
+        x: classifierNames,
+        y: errorSeries,
+        name: 'Error',
+        type: 'bar',
+      },
+    ],
+    {
+      title: `Accuracy`,
+      xaxis: {
+        title: 'Classifier',
+      },
+      yaxis: {
+        title: 'Accuracy',
+      },
+      barmode: 'stack',
+    }
+  );
+}
+
 function computeAccuracy(classifier: BaseClassifier) {
-  const accuracy: Record<string, { total: number; success: number }> = {};
+  if (classifiersAccuracy[classifier.name]) {
+    return;
+  }
+
+  classifiersAccuracy[classifier.name] = {};
+
   const manualClassifier = 'manual' + classifier.categories.suffix;
 
   for (const category of classifier.categories.labels) {
-    accuracy[category] = {
+    classifiersAccuracy[classifier.name][category] = {
       total: 0,
       success: 0,
     };
@@ -107,14 +167,25 @@ function computeAccuracy(classifier: BaseClassifier) {
     for (const entry of entries) {
       const features: PageFeatures = JSON.parse(readFileSync(entry, 'utf-8'));
 
-      const manualAnswer = features.classification[manualClassifier].answer[0];
+      const category = features.classification[manualClassifier].answer[0];
 
-      accuracy[manualAnswer].total++;
+      if (!classifiersAccuracy[classifier.name][category]) {
+        console.log(classifier.name);
+        console.log(features.url);
+        console.log(category);
+      }
+      classifiersAccuracy[classifier.name][category].total++;
 
-      if (manualAnswer === features.classification[classifier.name].answer[0]) {
-        accuracy[manualAnswer].success++;
+      if (category === features.classification[classifier.name].answer[0]) {
+        classifiersAccuracy[classifier.name][category].success++;
       }
     }
+  }
+}
+
+function extractStats(classifier: BaseClassifier) {
+  if (!classifiersAccuracy[classifier.name]) {
+    computeAccuracy(classifier);
   }
 
   const labels = [];
@@ -122,9 +193,16 @@ function computeAccuracy(classifier: BaseClassifier) {
   const totalByCategory = [];
   const successesByCategory = [];
   const errorsByCategory = [];
+  let successesTotal = 0;
+  let errorsTotal = 0;
 
-  for (const [category, { total, success }] of Object.entries(accuracy)) {
+  for (const [category, { total, success }] of Object.entries(
+    classifiersAccuracy[classifier.name]
+  )) {
     if (total !== 0) {
+      successesTotal += success;
+      errorsTotal += total - success;
+
       labels.push(category);
       successesByCategory.push((success * 100) / total);
       errorsByCategory.push(100 - (success * 100) / total);
@@ -140,9 +218,20 @@ function computeAccuracy(classifier: BaseClassifier) {
     successesByCategory,
     errorsByCategory,
     totalByCategory,
+    successesTotal,
+    errorsTotal,
   };
 }
 
-plotAccuracy(new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_A, PROMPT_B));
+const classifiers = [
+  new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_A, PROMPT_B),
+  new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_B, PROMPT_B),
+  new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_C, PROMPT_B),
+  new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_D, PROMPT_B),
+];
 
-plotAccuracy(new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_B, PROMPT_B));
+for (const classifier of classifiers) {
+  plotClassifierAccuracy(classifier);
+}
+
+plotMetaAccuracy(classifiers);

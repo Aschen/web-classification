@@ -21,6 +21,8 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@huggingface/inference": "^1.8.0",
+    "@xenova/transformers": "^2.4.1",
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
     "esbuild": "^0.18.3",
@@ -32,6 +34,7 @@
     "string-similarity-js": "^2.1.4",
     "ts-node": "^10.9.1",
     "tsc": "^2.0.4",
+    "tsx": "^3.12.7",
     "typescript": "^5.1.6"
   }
 }

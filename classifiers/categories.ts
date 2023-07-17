@@ -129,24 +129,76 @@ export const CATEGORIES_B: Categories = {
 export const CATEGORIES_C: Categories = {
   suffix: '-cC',
   labels: [
-    'other',
-    'page not found',
-    'account login/register',
-    'account orders',
-    'physical store address/location/direction',
-    'press material',
-    'legal informations',
-    'customer service/assistance/support',
-    'contact us/get a quote',
-    'career opportunities',
+    'e-commerce product details',
+    'e-commerce product list',
     'e-commerce cart',
-    'e-commerce returns/refunds and exchanges',
     'e-commerce shipping/delivery information',
     'e-commerce customer reviews/testimonial',
     'e-commerce gift cards',
-    'information about the company',
+    'e-commerce returns/refunds and exchanges',
+    'physical store address/location/direction',
+    'customer service/assistance/support',
+    'contact us/get a quote',
     'blog',
+    'legal informations',
+    'information about the company',
+    'press material',
+    'career opportunities',
+    'account login/register',
+    'other',
+    'page not found',
+  ],
+  descriptions: {
+    'e-commerce product details':
+      'page presenting a product with its description and features and price and reviews and related products and add to cart button',
+    'e-commerce product list':
+      'page presenting different products or a catalog or list of products usually with filter and sort and pagination',
+    'e-commerce cart':
+      'page presenting the cart with the list of products and the total price and the checkout button',
+    'e-commerce shipping/delivery information': '',
+    'e-commerce customer reviews/testimonial': '',
+    'e-commerce gift cards':
+      'page presenting gift cards or promotional codes or coupons',
+    'e-commerce returns/refunds and exchanges': '',
+    'physical store address/location/direction':
+      'page presenting the address and location and opening hours of physical store',
+    'customer service/assistance/support':
+      'page containing answer to frequently asked questions or a form or a chat to ask a question',
+    'contact us/get a quote':
+      'page containing a form to contact the company or get a customized pricing quote',
+    blog: 'page containing articles or posts about topics related to the company or the company products',
+    'legal informations':
+      'page containing any kind of legal information such as terms and condition, privacy policy, etc',
+    'information about the company':
+      'page containing information about the company such as its history, mission statement, and core values',
+    'press material': '',
+    'career opportunities': '',
+    'account login/register': '',
+    other: '',
+    'page not found': '',
+  },
+};
+
+export const CATEGORIES_D: Categories = {
+  suffix: '-cD',
+  labels: [
+    'e-commerce product list/catalog',
     'e-commerce product details',
-    'e-commerce products list',
+    'e-commerce cart',
+    'e-commerce shipping/delivery information',
+    'e-commerce customer reviews/testimonial',
+    'e-commerce gift cards',
+    'e-commerce returns/refunds and exchanges',
+    'physical store address/location/direction',
+    'customer support and assistance/frequently asked questions',
+    'contact us/get a pricing quote',
+    'blog',
+    'legal informations and terms and conditions',
+    'information about the company',
+    'press material',
+    'career opportunities',
+    'account login/register',
+    'other',
+    'page not found',
   ],
 };

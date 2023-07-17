@@ -1,7 +1,7 @@
-// import { OpenAI } from 'langchain/llms/openai';
-// import { writeFileSync } from 'node:fs';
+import { OpenAI } from 'langchain/llms/openai';
+import { readFileSync, writeFileSync } from 'node:fs';
 
-// import { CATEGORIES_A } from './classifiers/index.js';
+import { CATEGORIES_A } from './classifiers/index.js';
 
 // const model = new OpenAI();
 
@@ -23,8 +23,16 @@
 
 // // `call` is a simple string-in, string-out method for interacting with the model.
 
-import { stemmer } from 'stemmer';
+const classi = JSON.parse(readFileSync('./acc.json', 'utf-8'));
 
-const r = stemmer('things');
+for (const [classifier, categories] of Object.entries(classi)) {
+  let totalPages = 0;
+  let totalSuccess = 0;
 
-console.log(r);
+  for (const [category, { total, success }] of Object.entries(categories)) {
+    totalPages += total;
+    totalSuccess += success;
+  }
+
+  console.log(`${classifier} ${totalSuccess} / ${totalPages}`);
+}

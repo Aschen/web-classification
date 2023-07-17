@@ -10,15 +10,19 @@ import {
   PROMPT_C,
   CATEGORIES_A_WITH_DESCRIPTION,
   GPTModels,
+  CATEGORIES_C,
+  PROMPT_B2,
+  CATEGORIES_D,
+  PROMPT_A,
 } from './classifiers';
 
 const gpt35Classifier = new GPTClassifier(
   GPTModels.GPT35_16K,
-  CATEGORIES_B,
-  PROMPT_B,
+  CATEGORIES_D,
+  PROMPT_C,
   {
-    estimateOnly: true,
-    force: true,
+    // estimateOnly: true,
+    // force: true,
   }
 );
 await gpt35Classifier.init();
@@ -26,13 +30,13 @@ await gpt35Classifier.init();
 const embeddingsClassifier = new EmbeddingsClassifier(
   CATEGORIES_A_WITH_DESCRIPTION,
   {
-    estimateOnly: false,
-    force: true,
+    // estimateOnly: false,
+    // force: true,
   }
 );
 await embeddingsClassifier.init();
 
-const classifier = embeddingsClassifier;
+const classifier = gpt35Classifier;
 
 const pagesClassifier = new PagesClassifier([classifier]);
 

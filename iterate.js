@@ -1,6 +1,26 @@
 import { readFileSync, readdirSync, writeFileSync } from 'fs';
 import path from 'path';
 
+function transform(cat) {
+  if (cat === 'e-commerce product list') {
+    return 'e-commerce product list/catalog';
+  }
+
+  if (cat === 'customer service/assistance/support') {
+    return 'customer support and assistance/frequently asked questions';
+  }
+
+  if (cat === 'contact us/get a quote') {
+    return 'contact us/get a pricing quote';
+  }
+
+  if (cat === 'legal informations') {
+    return 'legal informations and terms and conditions';
+  }
+
+  return cat;
+}
+
 for (const siteDir of process.argv.slice(2)) {
   const entries = readdirSync(siteDir, { withFileTypes: true });
 
@@ -13,16 +33,12 @@ for (const siteDir of process.argv.slice(2)) {
       readFileSync(path.join(siteDir, entry.name, 'features.json'), 'utf-8')
     );
 
-    if (features.classification['manual-cA-']) {
-      features.classification['manual-cA'] =
-        features.classification['manual-cA-'];
-      delete features.classification['manual-cA-'];
-    }
-    if (features.classification['manual-cB-']) {
-      features.classification['manual-cB'] =
-        features.classification['manual-cB-'];
-      delete features.classification['manual-cB-'];
-    }
+    const manualCC = features.classification['manual-cC'].answer[0];
+    const manualCD = transform(manualCC);
+
+    features.classification['manual-cD'] = {
+      answer: [manualCD],
+    };
 
     writeFileSync(
       path.join(siteDir, entry.name, 'features.json'),
