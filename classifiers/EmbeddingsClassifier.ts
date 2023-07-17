@@ -1,6 +1,9 @@
 import { FaissStore } from 'langchain/vectorstores/faiss';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 
+import { Categories } from './categories';
+import { BaseClassifier } from './BaseClassifier';
+
 function repeat(text, times) {
   return new Array(times).fill(text).join('\n');
 }
@@ -11,30 +14,41 @@ function findOg(openGraph, key) {
   return match && match[1];
 }
 
-export class EmbeddingsClassifier {
-  static NAME = 'emb-ada-002';
+export class EmbeddingsClassifier extends BaseClassifier {
+  static MODEL_NAME = 'emb-ada-002';
   static PRICE = 0.0001;
   static MAX_LENGTH = 8191 * 4;
 
-  constructor(options = {}) {
-    const defaultOptions = { estimateOnly: false, force: false, suffix: '' };
-    this.options = { ...defaultOptions, ...options };
+  private store: FaissStore;
+
+  constructor(
+    categories: Categories,
+    options: Partial<BaseClassifier['options']> = {}
+  ) {
+    super(categories, options);
 
     this.store = null;
 
-    this.name = EmbeddingsClassifier.NAME + options.suffix;
+    this.name = EmbeddingsClassifier.MODEL_NAME + categories.suffix;
+
+    console.log(`EmbeddingsClassifier: ${this.name}`);
   }
 
-  async init(categories) {
-    this.categories = categories;
+  async init() {
+    if (!this.categories.descriptions) {
+      throw new Error('This classifier categories must have a description');
+    }
+
     this.store = await FaissStore.fromTexts(
-      Object.values(this.categories),
-      Object.keys(this.categories),
+      Object.values(this.categories.descriptions),
+      Object.keys(this.categories.descriptions),
       new OpenAIEmbeddings()
     );
+
+    return this;
   }
 
-  async execute(inputs) {
+  async execute(inputs: Record<string, any>) {
     if (!this.store) {
       throw new Error('The classifier must be initialized before execution');
     }

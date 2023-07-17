@@ -1,9 +1,16 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
-import { PagesSampler, SitemapReader } from './collectors/index.js';
+import { PagesSampler, SitemapReader } from './collectors';
+import { BaseScrapper } from './scrappers';
 
 export class Crawler {
-  constructor(site, scrappers = []) {
+  private site: string;
+  private inputLinks: string[];
+  private links: Record<string, boolean | string>;
+  private linksToVisit: string[];
+  private scrappers: BaseScrapper[];
+
+  constructor(site: string, scrappers: BaseScrapper[] = []) {
     this.site = site;
     this.inputLinks = [];
     this.links = {};
@@ -98,7 +105,7 @@ export class Crawler {
       }
       process.stdout.write('\n');
     } catch (error) {
-      console.error(`Cannot scrap ${link}: ${error.message}`);
+      console.error(`Cannot scrap: ${error.message}`);
       throw error;
     } finally {
       for (const scrapper of this.scrappers) {
@@ -155,7 +162,7 @@ export class Crawler {
       .toLowerCase();
   }
 
-  pageDir(pageUrl) {
+  pageDir(pageUrl: string) {
     return `${this.siteDir}/${this.pageName(pageUrl)}`;
   }
 }

@@ -13,7 +13,16 @@ for (const siteDir of process.argv.slice(2)) {
       readFileSync(path.join(siteDir, entry.name, 'features.json'), 'utf-8')
     );
 
-    features.classification['manual-cB'] = features.classification['manual'];
+    if (features.classification['manual-cA-']) {
+      features.classification['manual-cA'] =
+        features.classification['manual-cA-'];
+      delete features.classification['manual-cA-'];
+    }
+    if (features.classification['manual-cB-']) {
+      features.classification['manual-cB'] =
+        features.classification['manual-cB-'];
+      delete features.classification['manual-cB-'];
+    }
 
     writeFileSync(
       path.join(siteDir, entry.name, 'features.json'),

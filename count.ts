@@ -1,5 +1,5 @@
-import { read, readFileSync, readdir, statSync } from 'fs';
-import path from 'path';
+import { read, readFileSync, readdir, statSync } from 'node:fs';
+import { join } from 'path';
 
 const directoryPath = './sites';
 
@@ -13,7 +13,7 @@ readdir(directoryPath, (error, files) => {
   }
 
   files.forEach((file) => {
-    const filePath = path.join(directoryPath, file);
+    const filePath = join(directoryPath, file);
     const stats = statSync(filePath);
 
     if (stats.isDirectory()) {

@@ -1,11 +1,25 @@
-import Path from 'node:path';
+import { join } from 'node:path';
 import { writeFileSync } from 'node:fs';
 
-import { chromium } from 'playwright';
+import { Browser, BrowserContext, Page, chromium } from 'playwright';
 import * as esbuild from 'esbuild';
 
-export class PlaywrightScrapper {
-  constructor(options = {}) {
+import { PageFeatures } from '../classifiers';
+import { BaseScrapper } from './BaseScrapper';
+
+export class PlaywrightScrapper extends BaseScrapper {
+  private browser: Browser;
+  private context: BrowserContext;
+  private page: Page;
+  private options: {
+    html: boolean;
+    screenshot: boolean;
+  };
+  private initScript: string;
+
+  constructor(options: Partial<PlaywrightScrapper['options']> = {}) {
+    super();
+
     this.browser = null;
     this.context = null;
     this.page = null;
@@ -26,8 +40,8 @@ export class PlaywrightScrapper {
     this.page = await this.context.newPage();
   }
 
-  async scrapePage(pageUrl, pageDir, pageName) {
-    const description = {
+  async scrapePage(pageUrl: string, pageDir: string, pageName: string) {
+    const features: Partial<PageFeatures> = {
       html: undefined,
       screenshot: undefined,
     };
@@ -37,13 +51,13 @@ export class PlaywrightScrapper {
     if (this.options.html) {
       const htmlPath = `${pageDir}/${pageName}.html`;
 
-      const { html } = await page.evaluate(() => {
+      const { html } = await this.page.evaluate(() => {
         return globalThis.scrap();
       });
 
       writeFileSync(htmlPath, html);
 
-      description.html = htmlPath;
+      features.html = htmlPath;
     }
 
     if (this.options.screenshot) {
@@ -54,10 +68,10 @@ export class PlaywrightScrapper {
         fullPage: true,
       });
 
-      description.screenshot = screenshotPath;
+      features.screenshot = screenshotPath;
     }
 
-    return description;
+    return features;
   }
 
   async dispose() {
@@ -79,7 +93,7 @@ export class PlaywrightScrapper {
       return this.initScript;
     }
 
-    const filePath = Path.join('./browser-script', 'index.ts');
+    const filePath = join('./browser-script', 'index.ts');
     const built = await esbuild.build({
       entryPoints: [filePath],
       bundle: true,

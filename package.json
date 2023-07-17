@@ -26,8 +26,10 @@
     "esbuild": "^0.18.3",
     "faiss-node": "^0.2.2",
     "langchain": "^0.0.105",
+    "nodeplotlib": "^1.1.2",
     "playwright": "^1.35.1",
     "stemmer": "^2.0.1",
-    "string-similarity-js": "^2.1.4"
+    "string-similarity-js": "^2.1.4",
+    "tsc": "^2.0.4"
   }
 }

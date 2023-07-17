@@ -1,8 +1,13 @@
-import { load } from 'cheerio';
+import { CheerioAPI, load } from 'cheerio';
 import { writeFileSync } from 'fs';
 
 export class SitemapReader {
-  constructor(url) {
+  private url: URL;
+  private links: Set<string>;
+  private mainLinks: Set<string>;
+  private visitedSitemaps: Set<string>;
+
+  constructor(url: string) {
     this.url = new URL(url);
     this.links = new Set();
     this.mainLinks = new Set();
@@ -114,11 +119,7 @@ export class SitemapReader {
     await this.extractLinks($);
   }
 
-  /**
-   *
-   * @param {import 'cheerio'.CheerioAPI} $
-   */
-  async extractLinks($) {
+  async extractLinks($: CheerioAPI) {
     const urls = $('url loc');
 
     urls.each((index, element) => {
@@ -154,11 +155,11 @@ export class SitemapReader {
     );
   }
 
-  sanitizeLink(link) {
+  sanitizeLink(link: string) {
     return link.replace(/\n/g, '').trim().replace(/\/$/, '');
   }
 
-  excludedSitemap(sitemapUrl) {
+  excludedSitemap(sitemapUrl: string) {
     return sitemapUrl.includes('fr-ca');
   }
 }

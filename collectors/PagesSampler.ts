@@ -1,11 +1,15 @@
 import { writeFileSync } from 'fs';
 
 export class PagesSampler {
-  /**
-   *
-   * @param {string[]} links
-   */
-  constructor(links, options = {}) {
+  private links: string[];
+  private sampledLinks: string[];
+  private tree: any;
+  private options: {
+    leafSampleSize: number;
+    maxBranchSize: number;
+  };
+
+  constructor(links: string[], options: Partial<PagesSampler['options']> = {}) {
     this.links = links;
     this.sampledLinks = [];
 
@@ -16,7 +20,7 @@ export class PagesSampler {
     this.createTree();
   }
 
-  sample(mainLinks = []) {
+  sample(mainLinks: string[] = []) {
     const walkTree = (node, previousBranchSize = 0) => {
       const leafUrls = [];
       const nodes = [];

@@ -1,12 +1,18 @@
+import { writeFileSync } from 'node:fs';
+
 import { load } from 'cheerio';
-import { writeFileSync } from 'fs';
+import { PageFeatures } from 'classifiers';
 
-export class HTMLScrapper {
-  constructor() {}
+import { BaseScrapper } from './BaseScrapper';
 
+export class HTMLScrapper extends BaseScrapper {
   async init() {}
 
-  async scrapePage(pageUrl, pageDir, pageName) {
+  async scrapePage(
+    pageUrl: string,
+    pageDir: string,
+    pageName: string
+  ): Promise<Partial<PageFeatures>> {
     const html = await fetch(pageUrl).then((r) => r.text());
 
     const openGraphDescription = this.openGraphDescription(html);
@@ -22,17 +28,17 @@ export class HTMLScrapper {
     writeFileSync(contentTextPath, contentText);
     writeFileSync(openGraphDescriptionPath, openGraphDescription);
 
-    const description = {
+    const features: Partial<PageFeatures> = {
       html: htmlPath,
       contentHtml: contentHtmlPath,
       contentText: contentTextPath,
       openGraph: openGraphDescriptionPath,
     };
 
-    return description;
+    return features;
   }
 
-  openGraphDescription(html) {
+  private openGraphDescription(html: string) {
     const $ = load(html);
 
     let openGraphDescription = '';
@@ -47,7 +53,7 @@ export class HTMLScrapper {
     return openGraphDescription;
   }
 
-  pageContent(html) {
+  private pageContent(html: string) {
     const $ = load(html);
 
     // $('[class]').removeAttr('class');

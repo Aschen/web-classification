@@ -1,20 +1,25 @@
 import { OpenAI } from 'langchain/llms/openai';
 import { PromptTemplate } from 'langchain/prompts';
 import { stringSimilarity } from 'string-similarity-js';
+import { BaseClassifier } from './BaseClassifier';
+import { Prompt } from './prompts';
+import { Categories } from './categories';
 
 class AnswerParser {
-  constructor(categories) {
+  private categories: string[];
+
+  constructor(categories: string[]) {
     this.categories = categories;
   }
 
-  parse(answer) {
+  parse(answer: string): string[] {
     const rawAnswers = answer
       .replace(/\\n/g, '')
       .replace('Answer: ', '')
       .split(',')
       .map((category) => category.trim());
 
-    const answers = [];
+    const answers: string[] = [];
 
     for (const rawAnswer of rawAnswers) {
       if (!this.categories.includes(rawAnswer)) {
@@ -32,9 +37,9 @@ class AnswerParser {
     return answers;
   }
 
-  findWithCommonWords(text) {
+  findWithCommonWords(text: string): string[] {
     const words = text.split(' ');
-    const result = [];
+    const result: string[] = [];
 
     for (const category of this.categories) {
       const categoryWords = category.split(' ');
@@ -48,7 +53,7 @@ class AnswerParser {
     return result;
   }
 
-  findBestMatch(text, categories) {
+  findBestMatch(text: string, categories: string[]): string | null {
     let max = 0;
     let category = null;
 
@@ -63,59 +68,69 @@ class AnswerParser {
   }
 }
 
-export class GPTClassifier {
-  static GPT35 = 'gpt-3.5-turbo';
-  static GPT35_16K = 'gpt-3.5-turbo-16k';
-  static GPT4 = 'gpt-4';
-
+export enum GPTModels {
+  GPT35 = 'gpt-3.5-turbo',
+  GPT35_16K = 'gpt-3.5-turbo-16k',
+  GPT4 = 'gpt-4',
+}
+export class GPTClassifier extends BaseClassifier {
   static PRICES = {
-    [GPTClassifier.GPT35]: {
+    [GPTModels.GPT35]: {
       maxTokens: 4000,
       input: 0.0015,
       output: 0.002,
     },
-    [GPTClassifier.GPT35_16K]: {
+    [GPTModels.GPT35_16K]: {
       maxTokens: 16000,
       input: 0.003,
       output: 0.004,
     },
-    [GPTClassifier.GPT4]: {
+    [GPTModels.GPT4]: {
       maxTokens: 4000,
       input: 0.03,
       output: 0.06,
     },
   };
 
-  constructor(modelName, options = {}) {
+  private model: OpenAI;
+  private parser: AnswerParser;
+  private promptTemplate: PromptTemplate;
+  private maxPromptLength: number;
+  private modelName: string;
+  private prompt: Prompt;
+
+  constructor(
+    modelName: GPTModels,
+    categories: Categories,
+    prompt: Prompt,
+    options: Partial<BaseClassifier['options']> = {}
+  ) {
+    super(categories, options);
+
     this.model = new OpenAI({
       modelName,
       temperature: 0.0,
       maxTokens: -1,
     });
-    this.prompt = null;
     this.parser = null;
 
     this.maxPromptLength =
-      GPTClassifier.PRICES[GPTClassifier.GPT35_16K].maxTokens * 4;
-
-    const defaultOptions = { estimateOnly: false, force: false, suffix: '' };
-    this.options = { ...defaultOptions, ...options };
+      GPTClassifier.PRICES[GPTModels.GPT35_16K].maxTokens * 4;
 
     this.modelName = modelName;
-    this.name = modelName + this.options.suffix;
+    this.prompt = prompt;
+    this.categories = categories;
+    this.name = modelName + this.categories.suffix + this.prompt.suffix;
+
+    console.log(`GPTClassifier: ${this.name}`);
   }
 
-  /**
-   *
-   * @param {import('langchain/prompts').PromptTemplate} prompt
-   * @param {object} inputs
-   */
-  async execute(inputs) {
-    if (!this.prompt) {
-      throw new Error('A prompt must be set before executing the classifier');
+  async execute(inputs: Record<string, any>) {
+    if (!this.promptTemplate) {
+      throw new Error('The classifier must be initialized before execution');
     }
 
-    const prompt = await this.prompt.format(inputs);
+    const prompt = await this.promptTemplate.format(inputs);
     const truncatedPrompt = prompt.slice(0, this.maxPromptLength);
 
     const result = this.options.estimateOnly
@@ -137,12 +152,12 @@ export class GPTClassifier {
     };
   }
 
-  usePromptTextOnly(promptBuilder, categories) {
-    const template = promptBuilder(categories);
+  async init() {
+    const template = this.prompt.template(this.categories.labels);
 
-    this.parser = new AnswerParser(categories);
+    this.parser = new AnswerParser(this.categories.labels);
 
-    this.prompt = new PromptTemplate({
+    this.promptTemplate = new PromptTemplate({
       template,
       inputVariables: ['url', 'openGraph', 'contentText'],
     });
@@ -150,14 +165,3 @@ export class GPTClassifier {
     return this;
   }
 }
-
-/**
- *
-The web page url is the more important to classify the web page: 
-{url}
-The Web page open graph information provide a good insight about the web page content: 
-{openGraph}
-The Web page main content text can contains some noise but it is still a good source of information: 
-{contentText}
-
- */

@@ -1,9 +1,9 @@
+import { read, readFileSync, writeFileSync } from 'node:fs';
+
 import { load } from 'cheerio';
-import { read, readFileSync, writeFileSync } from 'fs';
 
-import { Crawler } from './Crawler.js';
-import { HTMLScrapper } from './scrappers/HTMLScrapper.js';
-
+import { Crawler } from './Crawler';
+import { HTMLScrapper } from './scrappers';
 import {
   GPTClassifier,
   CATEGORIES_A,
@@ -11,7 +11,8 @@ import {
   PROMPT_B,
   PROMPT_A,
   EmbeddingsClassifier,
-} from './classifiers/index.js';
+  GPTModels,
+} from './classifiers';
 
 const dir =
   './sites/www.audio-technica.com/www_audio_technica_com_en_gb_cartridges_best_for';
@@ -21,15 +22,20 @@ const url = features.url;
 const openGraph = readFileSync(features.openGraph, 'utf-8');
 const contentText = readFileSync(features.contentText, 'utf-8');
 
-const gptClassifier = new GPTClassifier(GPTClassifier.GPT35, {
+const gptClassifier = new GPTClassifier(
+  GPTModels.GPT35,
+  CATEGORIES_B,
+  PROMPT_B,
+  {
+    force: true,
+  }
+);
+await gptClassifier.init();
+
+const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES_B, {
   force: true,
 });
-gptClassifier.usePromptTextOnly(PROMPT_B, CATEGORIES_B);
-
-const embeddingsClassifier = new EmbeddingsClassifier({
-  suffix: '-cB',
-});
-await embeddingsClassifier.init(CATEGORIES_B);
+await embeddingsClassifier.init();
 
 const result = await embeddingsClassifier.execute({
   url,

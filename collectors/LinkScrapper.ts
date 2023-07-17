@@ -1,7 +1,11 @@
 import { load } from 'cheerio';
 
 export class LinkScrapper {
-  constructor(url) {
+  private url: string;
+  private links: string[];
+  private visitedLinks: Set<string>;
+
+  constructor(url: string) {
     this.url = url;
     this.links = [];
     this.visitedLinks = new Set();
@@ -9,7 +13,7 @@ export class LinkScrapper {
     this.links.push(this.url);
   }
 
-  async collect() {
+  async collect(): Promise<string[]> {
     while (this.links.length > 0) {
       console.log(`Links to visit: ${this.links.length}`);
       console.log(`Visited links: ${this.visitedLinks.size}`);
