@@ -1,35 +1,30 @@
-import { load } from 'cheerio';
-import { read, readFileSync, writeFileSync } from 'fs';
+// import { OpenAI } from 'langchain/llms/openai';
+// import { writeFileSync } from 'node:fs';
 
-import { Crawler } from './Crawler.js';
-import { HTMLScrapper } from './scrappers/HTMLScrapper.js';
+// import { CATEGORIES_A } from './classifiers/index.js';
 
-import {
-  GPTClassifier,
-  CATEGORIES_A,
-  CATEGORIES_B,
-  PROMPT_B,
-  PROMPT_A,
-} from './classifiers/index.js';
+// const model = new OpenAI();
 
-const dir =
-  './sites/www.audio-technica.com/www_audio_technica_com_en_gb_cartridges_best_for';
+// const categories = {};
+// for (const cat of CATEGORIES_A) {
+//   if (categories[cat]) {
+//     continue;
+//   }
+//   const resA = await model.call(
+//     `I want you to describe the potential content of a web page belongings to an ecommerce website for me.
+//     This description will be used to compute embeddings and then classify web pages accordingly.
+//     Answer directly
+//     The web page category is: ${cat}
+//     `
+//   );
+//   categories[cat] = resA;
+//   writeFileSync('./categories.json', JSON.stringify(categories, null, 2));
+// }
 
-const features = JSON.parse(readFileSync(`${dir}/features.json`, 'utf-8'));
-const url = features.url;
-const openGraph = readFileSync(features.openGraph, 'utf-8');
-const contentText = readFileSync(features.contentText, 'utf-8');
+// // `call` is a simple string-in, string-out method for interacting with the model.
 
-const classifier = new GPTClassifier(GPTClassifier.GPT35, {
-  force: true,
-});
+import { stemmer } from 'stemmer';
 
-classifier.usePromptTextOnly(PROMPT_B, CATEGORIES_B);
+const r = stemmer('things');
 
-const result = await classifier.execute({
-  url,
-  contentText,
-  openGraph,
-});
-
-console.log(result);
+console.log(r);

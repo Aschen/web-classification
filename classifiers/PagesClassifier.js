@@ -16,30 +16,32 @@ export class PagesClassifier {
 
     for (const entry of entries) {
       try {
-        if (entry.isDirectory()) {
-          const entryPath = path.join(directory, entry.name);
-
-          if (existsSync(entryPath, 'features.json')) {
-            const consumption = await this.classifyPage(entryPath);
-
-            for (const [classifier, classifierConsumption] of Object.entries(
-              consumption
-            )) {
-              if (!totalConsumption[classifier]) {
-                totalConsumption[classifier] = {
-                  tokens: 0,
-                  cost: 0,
-                };
-              }
-              totalConsumption[classifier].tokens +=
-                classifierConsumption.tokens;
-              totalConsumption[classifier].cost += classifierConsumption.cost;
-            }
-            totalConsumption.pages++;
-          } else {
-            await this.start(entryPath);
-          }
+        if (!entry.isDirectory()) {
+          continue;
         }
+
+        const entryPath = path.join(directory, entry.name);
+
+        if (!existsSync(entryPath, 'features.json')) {
+          await this.start(entryPath);
+          continue;
+        }
+
+        const consumption = await this.classifyPage(entryPath);
+
+        for (const [classifier, classifierConsumption] of Object.entries(
+          consumption
+        )) {
+          if (!totalConsumption[classifier]) {
+            totalConsumption[classifier] = {
+              tokens: 0,
+              cost: 0,
+            };
+          }
+          totalConsumption[classifier].tokens += classifierConsumption.tokens;
+          totalConsumption[classifier].cost += classifierConsumption.cost;
+        }
+        totalConsumption.pages++;
       } catch (error) {
         console.error(`Cannot classify ${entry.name}: ${error.message}`);
       }

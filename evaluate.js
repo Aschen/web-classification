@@ -14,6 +14,7 @@ import { chromium } from 'playwright';
 import {
   CATEGORIES_A,
   CATEGORIES_B,
+  EmbeddingsClassifier,
   GPTClassifier,
 } from './classifiers/index.js';
 
@@ -40,7 +41,7 @@ class Chromium {
 }
 
 const CORRECTION = false;
-const CLASSIFIER_NAME = GPTClassifier.GPT35_16K + '-cA-pB';
+const CLASSIFIER_NAME = EmbeddingsClassifier.NAME + '-cA-bis';
 const MANUAL_NAME = 'manual' + '';
 const CATEGORIES = CATEGORIES_B;
 
@@ -73,11 +74,11 @@ for (const siteDir of process.argv.slice(2)) {
       readFileSync(path.join(siteDir, entry.name, 'features.json'), 'utf-8')
     );
 
-    const gpt35Classification = features.classification[CLASSIFIER_NAME];
+    const classifierClassification = features.classification[CLASSIFIER_NAME];
     const manualClassification = features.classification[MANUAL_NAME];
 
     total++;
-    if (gpt35Classification.answer[0] !== manualClassification[0]) {
+    if (classifierClassification.answer[0] !== manualClassification[0]) {
       errors++;
       if (!CORRECTION) {
         continue;
@@ -88,12 +89,14 @@ for (const siteDir of process.argv.slice(2)) {
       for (const cat of CATEGORIES) {
         console.log(`${i++}) ${cat}`);
       }
-      console.log(`1) GPT-3.5 classification: ${gpt35Classification.answer}`);
+      console.log(
+        `1) GPT-3.5 classification: ${classifierClassification.answer}`
+      );
       console.log(`2) Manual classification: ${manualClassification}`);
 
       await browser.visit(features.url);
       const answer = await ask('Which is correct? ', [
-        gpt35Classification.answer[0],
+        classifierClassification.answer[0],
         manualClassification[0],
         ...CATEGORIES,
       ]);
