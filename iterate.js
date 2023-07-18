@@ -20,7 +20,7 @@ function transform(cat) {
 
   return cat;
 }
-
+const sites = [];
 for (const siteDir of process.argv.slice(2)) {
   const entries = readdirSync(siteDir, { withFileTypes: true });
 
@@ -28,17 +28,15 @@ for (const siteDir of process.argv.slice(2)) {
     if (!entry.isDirectory()) {
       continue;
     }
-
+    sites.push('./sites/' + entry.name);
+    continue;
     const features = JSON.parse(
       readFileSync(path.join(siteDir, entry.name, 'features.json'), 'utf-8')
     );
 
-    const manualCC = features.classification['manual-cC'].answer[0];
-    const manualCD = transform(manualCC);
-
-    features.classification['manual-cD'] = {
-      answer: [manualCD],
-    };
+    if (features.classification.manual) {
+      features.classification['manual-cD'] = features.classification.manual;
+    }
 
     writeFileSync(
       path.join(siteDir, entry.name, 'features.json'),
@@ -46,3 +44,5 @@ for (const siteDir of process.argv.slice(2)) {
     );
   }
 }
+
+console.log(sites.join(' '));

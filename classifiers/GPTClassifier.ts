@@ -73,6 +73,7 @@ export enum GPTModels {
   GPT35_16K = 'gpt-3.5-turbo-16k',
   GPT4 = 'gpt-4',
 }
+
 export class GPTClassifier extends BaseClassifier {
   static PRICES = {
     [GPTModels.GPT35]: {

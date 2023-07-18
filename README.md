@@ -3,10 +3,12 @@
 ## Todo
 
 - ignore 404 when scrapping
+- do not scrap anchors
 - split input and give it
-- similarity between page structure
+- similarity between page structure: https://github.com/DatabaseGroup/tree-similarity
 - statistics on word appearance on a page category
-- parallel classifiers for performances
+- parallel classifiers requests for performances
+- remove og:image attributes
 
 ## Classification
 
@@ -15,10 +17,7 @@
 - classification with word stats and bayesien
 - reduce number of labels by comparing page embeddings and categories embeddings
 - classify with LLM a sample of website then use another classification trained with the sample
-
-### LLM
-
-- test on a new website
+- GPT: jouer avec les hyper params
 
 ## Qualimetry
 

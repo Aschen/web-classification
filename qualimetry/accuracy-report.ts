@@ -169,13 +169,13 @@ function computeAccuracy(classifier: BaseClassifier) {
 
       const category = features.classification[manualClassifier].answer[0];
 
-      if (!classifiersAccuracy[classifier.name][category]) {
-        console.log(classifier.name);
-        console.log(features.url);
-        console.log(category);
-      }
       classifiersAccuracy[classifier.name][category].total++;
 
+      if (!features.classification[classifier.name]) {
+        console.log(features.classification);
+        console.log(entry);
+        console.log(classifier.name);
+      }
       if (category === features.classification[classifier.name].answer[0]) {
         classifiersAccuracy[classifier.name][category].success++;
       }
@@ -224,9 +224,9 @@ function extractStats(classifier: BaseClassifier) {
 }
 
 const classifiers = [
-  new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_A, PROMPT_B),
-  new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_B, PROMPT_B),
-  new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_C, PROMPT_B),
+  // new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_A, PROMPT_B),
+  // new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_B, PROMPT_B),
+  // new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_C, PROMPT_B),
   new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES_D, PROMPT_B),
 ];
 

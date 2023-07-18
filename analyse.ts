@@ -12,6 +12,7 @@ import {
   CATEGORIES_A,
   CATEGORIES_B,
   CATEGORIES_C,
+  CATEGORIES_D,
   EmbeddingsClassifier,
   GPTClassifier,
   GPTModels,
@@ -21,9 +22,9 @@ import {
 } from './classifiers';
 import { Chromium, ask } from './tools';
 
-const CATEGORIES = CATEGORIES_C;
+const CATEGORIES = CATEGORIES_D;
 const PROMPT = PROMPT_B;
-const CATEGORY = 'customer service/assistance/support';
+const CATEGORY = 'account login/register';
 
 const classifier = new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES, PROMPT);
 // const classifier = new EmbeddingsClassifier(CATEGORIES);

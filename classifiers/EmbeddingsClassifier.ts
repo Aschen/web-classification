@@ -62,7 +62,7 @@ export class EmbeddingsClassifier extends BaseClassifier {
 
     const result = this.options.estimateOnly
       ? [{ metadata: 'mock' }]
-      : await this.store.similaritySearch(truncatedText, 3);
+      : await this.store.similaritySearch(truncatedText, 10);
 
     // approximative
     const tokens = truncatedText.length / 4;

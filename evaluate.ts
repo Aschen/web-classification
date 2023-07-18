@@ -25,10 +25,10 @@ import { Chromium, ask } from './tools';
 
 const CORRECTION = false;
 const CATEGORIES = CATEGORIES_D;
-const PROMPT = PROMPT_A;
+const PROMPT = PROMPT_B;
 
-const classifier = new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES, PROMPT);
-// const classifier = new EmbeddingsClassifier(CATEGORIES);
+// const classifier = new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES, PROMPT);
+const classifier = new EmbeddingsClassifier(CATEGORIES);
 
 const MANUAL_NAME = 'manual' + CATEGORIES.suffix;
 const CLASSIFIER_NAME = classifier.name;
@@ -49,14 +49,21 @@ for (const siteDir of process.argv.slice(2)) {
     );
 
     const classifierClassification = features.classification[CLASSIFIER_NAME];
-    const manualClassification = features.classification[MANUAL_NAME];
+    const manualAnswer = features.classification[MANUAL_NAME]?.answer?.at(0);
 
     total++;
-    if (classifierClassification.answer[0] !== manualClassification.answer[0]) {
+    if (
+      !manualAnswer ||
+      classifierClassification?.answer.at(0) !== manualAnswer
+    ) {
       errors++;
+      if (manualAnswer) {
+        continue;
+      }
       if (!CORRECTION) {
         continue;
       }
+
       console.log('\n---');
       console.log(readFileSync(features.openGraph, 'utf-8'));
       let i = 3;
@@ -64,14 +71,14 @@ for (const siteDir of process.argv.slice(2)) {
         console.log(`${i++}) ${cat}`);
       }
       console.log(
-        `1) GPT-3.5 classification: ${classifierClassification.answer}`
+        `1) GPT-3.5 classification: ${classifierClassification?.answer}`
       );
-      console.log(`2) Manual classification: ${manualClassification.answer}`);
+      console.log(`2) Manual classification: ${manualAnswer}`);
 
-      await browser.visit(features.url);
+      browser.visit(features.url);
       const answer = await ask('Which is correct? ', [
-        classifierClassification.answer[0],
-        manualClassification.answer[0],
+        classifierClassification?.answer?.at(0),
+        manualAnswer,
         ...CATEGORIES.labels,
       ]);
       console.log(answer);

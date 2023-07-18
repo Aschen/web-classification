@@ -8,7 +8,6 @@ import {
   PROMPT_B,
   EmbeddingsClassifier,
   PROMPT_C,
-  CATEGORIES_A_WITH_DESCRIPTION,
   GPTModels,
   CATEGORIES_C,
   PROMPT_B2,
@@ -19,24 +18,21 @@ import {
 const gpt35Classifier = new GPTClassifier(
   GPTModels.GPT35_16K,
   CATEGORIES_D,
-  PROMPT_C,
+  PROMPT_B,
   {
-    // estimateOnly: true,
+    estimateOnly: true,
     // force: true,
   }
 );
 await gpt35Classifier.init();
 
-const embeddingsClassifier = new EmbeddingsClassifier(
-  CATEGORIES_A_WITH_DESCRIPTION,
-  {
-    // estimateOnly: false,
-    // force: true,
-  }
-);
+const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES_D, {
+  // estimateOnly: true,
+  force: true,
+});
 await embeddingsClassifier.init();
 
-const classifier = gpt35Classifier;
+const classifier = embeddingsClassifier;
 
 const pagesClassifier = new PagesClassifier([classifier]);
 
