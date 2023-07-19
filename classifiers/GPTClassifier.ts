@@ -129,6 +129,8 @@ export class GPTClassifier extends BaseClassifier {
       throw new Error('The classifier must be initialized before execution');
     }
 
+    const now = Date.now();
+
     const prompt = await this.promptTemplate.format(inputs);
     const truncatedPrompt = prompt.slice(0, this.maxPromptLength);
 
@@ -148,6 +150,7 @@ export class GPTClassifier extends BaseClassifier {
       answer: this.parser.parse(result),
       tokens: inputTokens + outputTokens,
       cost: inputCost + outputCost,
+      time: Date.now() - now,
     };
   }
 

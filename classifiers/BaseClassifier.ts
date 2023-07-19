@@ -44,5 +44,6 @@ export abstract class BaseClassifier {
     answer: string[];
     tokens: number;
     cost: number;
+    time: number;
   }>;
 }

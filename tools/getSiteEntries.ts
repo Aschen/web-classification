@@ -1,4 +1,5 @@
-import { readdirSync } from 'node:fs';
+import { PageFeatures } from 'classifiers';
+import { readdirSync, readFileSync } from 'node:fs';
 
 const SITES_DIR = './sites';
 
@@ -37,4 +38,19 @@ export function getSitesEntries(onlySites = []): Record<string, string[]> {
   }
 
   return sites;
+}
+
+export function getFeatures(onlySites = []): PageFeatures[] {
+  const sites = getSitesEntries(onlySites);
+
+  const features: PageFeatures[] = [];
+
+  for (const site of Object.values(sites)) {
+    for (const page of site) {
+      const f = JSON.parse(readFileSync(page, 'utf-8'));
+      features.push(f);
+    }
+  }
+
+  return features;
 }

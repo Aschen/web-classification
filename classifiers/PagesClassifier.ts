@@ -8,6 +8,7 @@ type ClassifiersConsumption = Record<
   {
     tokens: number;
     cost: number;
+    time: number;
   }
 >;
 
@@ -16,6 +17,7 @@ export type ClassificationReport = {
     [classifier: string]: {
       tokens: number;
       cost: number;
+      time: number;
     };
   };
   pages: number;
@@ -59,12 +61,15 @@ export class PagesClassifier {
             totalConsumption.classifiers[classifier] = {
               tokens: 0,
               cost: 0,
+              time: 0,
             };
           }
           totalConsumption.classifiers[classifier].tokens +=
             classifierConsumption.tokens;
           totalConsumption.classifiers[classifier].cost +=
             classifierConsumption.cost;
+          totalConsumption.classifiers[classifier].time +=
+            classifierConsumption.time;
         }
         totalConsumption.pages++;
       } catch (error) {
@@ -103,6 +108,7 @@ export class PagesClassifier {
         consumption[classifier.name] = {
           tokens: 0,
           cost: 0,
+          time: 0,
         };
       }
 

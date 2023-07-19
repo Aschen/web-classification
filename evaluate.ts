@@ -17,6 +17,7 @@ import {
   FunnelClassifier,
   GPTClassifier,
   GPTModels,
+  GzipClassifier,
   PROMPT_A,
   PROMPT_B,
   PROMPT_B2,
@@ -43,14 +44,14 @@ const gpt35Classifier2 = new GPTClassifier(
     // force: true,
   }
 );
-await gpt35Classifier2.init();
 const funnelClassifier = new FunnelClassifier(
   gptClassifier,
   gpt35Classifier2,
   CATEGORIES
 );
+const gzipClassifier = new GzipClassifier(CATEGORIES, []);
 
-const classifier = funnelClassifier;
+const classifier = gzipClassifier;
 const MANUAL_NAME = 'manual' + CATEGORIES.suffix;
 const CLASSIFIER_NAME = classifier.name;
 const browser = CORRECTION ? await new Chromium().init() : null;

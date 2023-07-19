@@ -23,10 +23,9 @@ export class FunnelClassifier extends BaseClassifier {
     return this;
   }
 
-  async execute(
-    inputs: Record<string, any>,
-    features: PageFeatures
-  ): Promise<{ answer: string[]; tokens: number; cost: number }> {
+  async execute(inputs: Record<string, any>, features: PageFeatures) {
+    const now = Date.now();
+
     const {
       answer: tofuCategories,
       tokens: tofuTokens,
@@ -58,6 +57,7 @@ export class FunnelClassifier extends BaseClassifier {
       answer: bofuCategories,
       tokens: tofuTokens + bofuTokens,
       cost: tofuCost + bofuCost,
+      time: Date.now() - now,
     };
   }
 }

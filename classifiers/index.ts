@@ -8,3 +8,4 @@ export * from './BARTClassifier';
 export * from './HFClassifier';
 export * from './FunnelClassifier';
 export * from './MockClassifier';
+export * from './GzipClassifier';

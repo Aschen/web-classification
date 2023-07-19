@@ -17,6 +17,8 @@ export class MockClassifier extends BaseClassifier {
   }
 
   async execute(inputs: Record<string, any>, features?: PageFeatures) {
+    const now = Date.now();
+
     const result = features.classification[this.name];
 
     if (!result) {
@@ -28,6 +30,7 @@ export class MockClassifier extends BaseClassifier {
       answer: result.answer,
       tokens: 0,
       cost: 0,
+      time: Date.now() - now,
     };
   }
 }

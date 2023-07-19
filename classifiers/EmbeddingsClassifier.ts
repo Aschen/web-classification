@@ -54,6 +54,8 @@ export class EmbeddingsClassifier extends BaseClassifier {
       throw new Error('The classifier must be initialized before execution');
     }
 
+    const now = Date.now();
+
     const text = `
     ${inputs.openGraph}
     ${repeat(findOg(inputs.openGraph, 'og:type'), 10)}
@@ -73,6 +75,7 @@ export class EmbeddingsClassifier extends BaseClassifier {
       answer: result.map((r) => r.metadata),
       tokens,
       cost,
+      time: Date.now() - now,
     };
   }
 }
