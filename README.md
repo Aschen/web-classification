@@ -21,6 +21,7 @@
 
 ## Qualimetry
 
+- sites moins bien classifiés
 - score precision / rappel
 - score classifier: moyenne pondérée
 - matrice de confusion: en dehors de la diagonale = cat moins bien classées

@@ -13,6 +13,8 @@ import {
   PROMPT_B2,
   CATEGORIES_D,
   PROMPT_A,
+  FunnelClassifier,
+  MockClassifier,
 } from './classifiers';
 
 const gpt35Classifier = new GPTClassifier(
@@ -20,19 +22,46 @@ const gpt35Classifier = new GPTClassifier(
   CATEGORIES_D,
   PROMPT_B,
   {
-    estimateOnly: true,
+    // estimateOnly: true,
     // force: true,
   }
 );
 await gpt35Classifier.init();
+// const gpt35Classifier2 = new GPTClassifier(
+//   GPTModels.GPT35_16K,
+//   CATEGORIES_D,
+//   PROMPT_B,
+//   {
+//     // estimateOnly: true,
+//     // force: true,
+//   }
+// );
+// await gpt35Classifier2.init();
 
-const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES_D, {
+// const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES_D, {
+//   // estimateOnly: true,
+//   // force: true,
+// });
+// await embeddingsClassifier.init();
+
+const mockClassifier = new MockClassifier(gpt35Classifier.name, CATEGORIES_D, {
   // estimateOnly: true,
-  force: true,
+  // force: true,
 });
-await embeddingsClassifier.init();
+await mockClassifier.init();
 
-const classifier = embeddingsClassifier;
+const funnelClassifier = new FunnelClassifier(
+  mockClassifier,
+  gpt35Classifier,
+  CATEGORIES_D,
+  {
+    // estimateOnly: true,
+    // force: true,
+  }
+);
+await funnelClassifier.init();
+
+const classifier = funnelClassifier;
 
 const pagesClassifier = new PagesClassifier([classifier]);
 

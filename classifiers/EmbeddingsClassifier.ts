@@ -29,8 +29,8 @@ export class EmbeddingsClassifier extends BaseClassifier {
 
     this.store = null;
 
-    this.name = EmbeddingsClassifier.MODEL_NAME + categories.suffix;
-
+    this.modelName = EmbeddingsClassifier.MODEL_NAME;
+    this.name = this.modelName + categories.suffix;
     console.log(`EmbeddingsClassifier: ${this.name}`);
   }
 
@@ -39,6 +39,7 @@ export class EmbeddingsClassifier extends BaseClassifier {
       throw new Error('This classifier categories must have a description');
     }
 
+    // This cost embeddings calls
     this.store = await FaissStore.fromTexts(
       Object.values(this.categories.descriptions),
       Object.keys(this.categories.descriptions),
@@ -65,7 +66,7 @@ export class EmbeddingsClassifier extends BaseClassifier {
       : await this.store.similaritySearch(truncatedText, 10);
 
     // approximative
-    const tokens = truncatedText.length / 4;
+    const tokens = truncatedText.length / 3;
     const cost = (tokens / 1000) * EmbeddingsClassifier.PRICE;
 
     return {

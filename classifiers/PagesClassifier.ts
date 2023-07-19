@@ -136,7 +136,7 @@ export class PagesClassifier {
     consumption: ClassifiersConsumption
   ) {
     try {
-      const result = await classifier.execute(inputs);
+      const result = await classifier.execute(inputs, features);
 
       if (!classifier.options.estimateOnly) {
         features.classification[classifier.name] = result;

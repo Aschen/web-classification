@@ -14,6 +14,7 @@ import {
   CATEGORIES_C,
   CATEGORIES_D,
   EmbeddingsClassifier,
+  FunnelClassifier,
   GPTClassifier,
   GPTModels,
   PROMPT_A,
@@ -27,9 +28,29 @@ const CORRECTION = false;
 const CATEGORIES = CATEGORIES_D;
 const PROMPT = PROMPT_B;
 
-// const classifier = new GPTClassifier(GPTModels.GPT35_16K, CATEGORIES, PROMPT);
-const classifier = new EmbeddingsClassifier(CATEGORIES);
+const gptClassifier = new GPTClassifier(
+  GPTModels.GPT35_16K,
+  CATEGORIES,
+  PROMPT
+);
+const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES);
+const gpt35Classifier2 = new GPTClassifier(
+  GPTModels.GPT35_16K,
+  CATEGORIES_D,
+  PROMPT_B,
+  {
+    // estimateOnly: true,
+    // force: true,
+  }
+);
+await gpt35Classifier2.init();
+const funnelClassifier = new FunnelClassifier(
+  gptClassifier,
+  gpt35Classifier2,
+  CATEGORIES
+);
 
+const classifier = funnelClassifier;
 const MANUAL_NAME = 'manual' + CATEGORIES.suffix;
 const CLASSIFIER_NAME = classifier.name;
 const browser = CORRECTION ? await new Chromium().init() : null;
@@ -97,6 +118,7 @@ for (const siteDir of process.argv.slice(2)) {
 
 browser && (await browser.dispose());
 
+console.log(`\nEvaluation with ${classifier.name}`);
 console.log(`Total: ${total}`);
 console.log(`Errors: ${errors}`);
 console.log(`Success: ${((total - errors) * 100) / total} %`);

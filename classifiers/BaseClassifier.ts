@@ -21,6 +21,7 @@ export type PageFeatures = {
 export abstract class BaseClassifier {
   public categories: Categories;
   public name: string;
+  public modelName: string;
   public options: {
     estimateOnly: boolean;
     force: boolean;
@@ -36,7 +37,10 @@ export abstract class BaseClassifier {
   }
 
   abstract init(): Promise<BaseClassifier>;
-  abstract execute(inputs: Record<string, any>): Promise<{
+  abstract execute(
+    inputs: Record<string, any>,
+    features: PageFeatures
+  ): Promise<{
     answer: string[];
     tokens: number;
     cost: number;

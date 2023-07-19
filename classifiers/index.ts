@@ -6,3 +6,5 @@ export * from './EmbeddingsClassifier';
 export * from './PagesClassifier';
 export * from './BARTClassifier';
 export * from './HFClassifier';
+export * from './FunnelClassifier';
+export * from './MockClassifier';

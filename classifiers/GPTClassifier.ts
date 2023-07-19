@@ -97,7 +97,6 @@ export class GPTClassifier extends BaseClassifier {
   private parser: AnswerParser;
   private promptTemplate: PromptTemplate;
   private maxPromptLength: number;
-  private modelName: string;
   private prompt: Prompt;
 
   constructor(
@@ -115,8 +114,7 @@ export class GPTClassifier extends BaseClassifier {
     });
     this.parser = null;
 
-    this.maxPromptLength =
-      GPTClassifier.PRICES[GPTModels.GPT35_16K].maxTokens * 4;
+    this.maxPromptLength = GPTClassifier.PRICES[modelName].maxTokens * 3;
 
     this.modelName = modelName;
     this.prompt = prompt;

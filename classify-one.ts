@@ -13,10 +13,10 @@ import {
   EmbeddingsClassifier,
   GPTModels,
   BARTClassifier,
-  CATEGORIES_A_WITH_DESCRIPTION,
   PROMPT_B2,
   CATEGORIES_C,
   HFClassifier,
+  CATEGORIES_D,
 } from './classifiers';
 
 const dir =
@@ -37,12 +37,9 @@ const gptClassifier = new GPTClassifier(
 );
 await gptClassifier.init();
 
-const embeddingsClassifier = new EmbeddingsClassifier(
-  CATEGORIES_A_WITH_DESCRIPTION,
-  {
-    force: true,
-  }
-);
+const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES_D, {
+  force: true,
+});
 await embeddingsClassifier.init();
 
 // const bartClassifier = new BARTClassifier(CATEGORIES_B, {
@@ -50,12 +47,12 @@ await embeddingsClassifier.init();
 // });
 // await bartClassifier.init();
 
-const hfClassifier = new HFClassifier(CATEGORIES_C, {
-  force: true,
-});
-await hfClassifier.init();
+// const hfClassifier = new HFClassifier(CATEGORIES_C, {
+//   force: true,
+// });
+// await hfClassifier.init();
 
-const result = await hfClassifier.execute({
+const result = await embeddingsClassifier.execute({
   url: urL,
   contentText,
   openGraph,
