@@ -1,6 +1,7 @@
 import { Categories } from './categories';
 
 export type PageFeatures = {
+  path: string;
   html: string;
   screenshot: string;
   contentHtml: string;
@@ -36,7 +37,7 @@ export abstract class BaseClassifier {
     this.options = { ...defaultOptions, ...options };
   }
 
-  abstract init(): Promise<BaseClassifier>;
+  abstract init(...args): Promise<BaseClassifier>;
   abstract execute(
     inputs: Record<string, any>,
     features: PageFeatures

@@ -17,7 +17,13 @@ import {
   MockClassifier,
   GzipClassifier,
 } from './classifiers';
-import { getFeatures, getSitesEntries } from 'tools';
+import {
+  evaluateDataset,
+  getFeatures,
+  getSitesEntries,
+  splitDatasetBySampling,
+  splitDatasetBySites,
+} from 'tools';
 
 // const gpt35Classifier = new GPTClassifier(
 //   GPTModels.GPT35_16K,
@@ -63,40 +69,26 @@ import { getFeatures, getSitesEntries } from 'tools';
 // );
 // await funnelClassifier.init();
 
-const features = getFeatures(['./sites/c64audio.com']);
+const { testSet, trainSet } = splitDatasetBySites(process.argv.slice(2));
 
-const gzipClassifier = new GzipClassifier(CATEGORIES_D, features, {
+const gzipClassifier = new GzipClassifier(CATEGORIES_D, {
   // estimateOnly: true,
   force: true,
 });
-await gzipClassifier.init();
+await gzipClassifier.init(trainSet);
 
 const classifier = gzipClassifier;
 
 const pagesClassifier = new PagesClassifier([classifier]);
 
-const total = {
-  [classifier.name]: {
-    tokens: 0,
-    cost: 0,
-    time: 0,
-  },
-};
+const report = await pagesClassifier.start(testSet);
 
-let pages = 0;
-for (let i = 2; i < process.argv.length; i++) {
-  const consumption = await pagesClassifier.start(process.argv[i]);
+console.log(`${report.pages} pages`);
+console.log(report.classifiers);
 
-  if (consumption.classifiers[classifier.name]) {
-    total[classifier.name].tokens +=
-      consumption.classifiers[classifier.name].tokens;
-    total[classifier.name].cost +=
-      consumption.classifiers[classifier.name].cost;
-    total[classifier.name].time +=
-      consumption.classifiers[classifier.name].time;
-  }
-  pages += consumption.pages;
-}
+const { total, errors, accuracy } = evaluateDataset(classifier, testSet);
 
-console.log(`${pages} pages`);
-console.log(total);
+console.log(' ---');
+console.log(`Total: ${total}`);
+console.log(`Errors: ${errors}`);
+console.log(`Accuracy: ${accuracy}`);

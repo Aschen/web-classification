@@ -5,7 +5,7 @@ import { BaseClassifier, PageFeatures } from './BaseClassifier';
 import { Categories } from './categories';
 
 type ExtendedPageFeatures = PageFeatures & {
-  gzipedLength?: number;
+  gzipedLength: number;
 };
 
 export class GzipClassifier extends BaseClassifier {
@@ -14,22 +14,22 @@ export class GzipClassifier extends BaseClassifier {
 
   constructor(
     categories: Categories,
-    trainSet: PageFeatures[],
     options: Partial<BaseClassifier['options']> = {}
   ) {
     super(categories, options);
 
-    this.trainSet = trainSet;
+    this.trainSet = [];
 
     this.name = 'gzip' + this.categories.suffix;
     this.manualClassification = 'manual' + this.categories.suffix;
   }
 
-  async init() {
-    for (const trainFeatures of this.trainSet) {
-      trainFeatures.gzipedLength = this.gzipedLength(
-        this.featuresText(trainFeatures)
-      );
+  async init(trainSet: PageFeatures[]) {
+    for (const trainFeatures of trainSet) {
+      this.trainSet.push({
+        ...trainFeatures,
+        gzipedLength: this.gzipedLength(this.featuresText(trainFeatures)),
+      });
     }
 
     return this;

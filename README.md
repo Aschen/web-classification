@@ -9,6 +9,8 @@
 - statistics on word appearance on a page category
 - parallel classifiers requests for performances
 - remove og:image attributes
+- utiliser embeddings clustering pour trouver les types de pages
+- utiliser le HTML + la structure des noeuds pour l'embeddings
 
 ## Classification
 

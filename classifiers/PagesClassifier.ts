@@ -1,5 +1,4 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs';
-import { join } from 'node:path';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 import { BaseClassifier, PageFeatures } from './BaseClassifier';
 
@@ -30,66 +29,49 @@ export class PagesClassifier {
     this.classifiers = classifiers;
   }
 
-  async start(directory: string): Promise<ClassificationReport> {
-    console.log(`Entering ${directory}`);
+  async start(dataset: PageFeatures[]): Promise<ClassificationReport> {
+    console.log(`Start classifying ${dataset.length} pages`);
 
-    const entries = readdirSync(directory, { withFileTypes: true });
-    const totalConsumption: ClassificationReport = {
+    const report: ClassificationReport = {
       classifiers: {},
       pages: 0,
     };
 
-    for (const entry of entries) {
+    for (const pageFeatures of dataset) {
       try {
-        if (!entry.isDirectory()) {
-          continue;
-        }
-
-        const entryPath = join(directory, entry.name);
-
-        if (!existsSync(join(entryPath, 'features.json'))) {
-          await this.start(entryPath);
-          continue;
-        }
-
-        const consumption = await this.classifyPage(entryPath);
+        const consumption = await this.classifyPage(pageFeatures);
 
         for (const [classifier, classifierConsumption] of Object.entries(
           consumption
         )) {
-          if (!totalConsumption.classifiers[classifier]) {
-            totalConsumption.classifiers[classifier] = {
+          if (!report.classifiers[classifier]) {
+            report.classifiers[classifier] = {
               tokens: 0,
               cost: 0,
               time: 0,
             };
           }
-          totalConsumption.classifiers[classifier].tokens +=
-            classifierConsumption.tokens;
-          totalConsumption.classifiers[classifier].cost +=
-            classifierConsumption.cost;
-          totalConsumption.classifiers[classifier].time +=
-            classifierConsumption.time;
+          report.classifiers[classifier].tokens += classifierConsumption.tokens;
+          report.classifiers[classifier].cost += classifierConsumption.cost;
+          report.classifiers[classifier].time += classifierConsumption.time;
         }
-        totalConsumption.pages++;
+
+        report.pages++;
       } catch (error) {
-        console.error(`Cannot classify ${entry.name}: ${error.message}`);
+        console.error(`Cannot classify ${pageFeatures.url}: ${error.message}`);
       }
     }
 
-    return totalConsumption;
+    return report;
   }
 
-  async classifyPage(pageDir: string) {
-    const features: PageFeatures = JSON.parse(
-      readFileSync(join(pageDir, 'features.json'), 'utf-8')
-    );
-    const url: string = features.url;
-    const openGraph = readFileSync(features.openGraph, 'utf-8');
-    const contentText = readFileSync(features.contentText, 'utf-8');
+  async classifyPage(pageFeatures: PageFeatures) {
+    const url: string = pageFeatures.url;
+    const openGraph = readFileSync(pageFeatures.openGraph, 'utf-8');
+    const contentText = readFileSync(pageFeatures.contentText, 'utf-8');
 
     console.log(`Classifying ${url}`);
-    features.classification ||= {};
+    pageFeatures.classification ||= {};
 
     const consumption: ClassifiersConsumption = {};
 
@@ -98,7 +80,7 @@ export class PagesClassifier {
       if (
         !classifier.options.force &&
         !classifier.options.estimateOnly &&
-        features.classification[classifier.name]
+        pageFeatures.classification[classifier.name]
       ) {
         console.log('  Already classified');
         continue;
@@ -115,7 +97,7 @@ export class PagesClassifier {
       promises.push(
         this.executeClassifier(
           classifier,
-          features,
+          pageFeatures,
           {
             url,
             openGraph,
@@ -127,10 +109,7 @@ export class PagesClassifier {
     }
     await Promise.all(promises);
 
-    writeFileSync(
-      join(pageDir, 'features.json'),
-      JSON.stringify(features, null, 2)
-    );
+    writeFileSync(pageFeatures.path, JSON.stringify(pageFeatures, null, 2));
 
     return consumption;
   }
@@ -154,6 +133,7 @@ export class PagesClassifier {
 
       consumption[classifier.name].tokens += result.tokens;
       consumption[classifier.name].cost += result.cost;
+      consumption[classifier.name].time += result.time;
     } catch (error) {
       console.error(`Cannot execute classifier ${classifier.name}: ${error}`);
       console.log(error);

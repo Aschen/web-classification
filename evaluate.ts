@@ -49,7 +49,7 @@ const funnelClassifier = new FunnelClassifier(
   gpt35Classifier2,
   CATEGORIES
 );
-const gzipClassifier = new GzipClassifier(CATEGORIES, []);
+const gzipClassifier = new GzipClassifier(CATEGORIES);
 
 const classifier = gzipClassifier;
 const MANUAL_NAME = 'manual' + CATEGORIES.suffix;

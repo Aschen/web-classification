@@ -1,4 +1,6 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync } from 'node:fs';
+
+import { getRandomElements } from '../tools';
 
 export class PagesSampler {
   private links: string[];
@@ -33,10 +35,7 @@ export class PagesSampler {
         }
       }
 
-      const sample = this.getRandomElements(
-        leafUrls,
-        this.options.leafSampleSize
-      );
+      const sample = getRandomElements(leafUrls, this.options.leafSampleSize);
       this.sampledLinks.push(node.url);
       this.sampledLinks.push(...sample);
 
@@ -100,27 +99,6 @@ export class PagesSampler {
         current = child;
       }
     }
-  }
-
-  /**
-   * Select random elements from an array using Fisher-Yates algorithm
-   */
-  getRandomElements(array, n) {
-    const shuffled = array.slice();
-
-    let currentIndex = shuffled.length;
-
-    while (currentIndex > 0) {
-      const randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      [shuffled[currentIndex], shuffled[randomIndex]] = [
-        shuffled[randomIndex],
-        shuffled[currentIndex],
-      ];
-    }
-
-    return shuffled.slice(0, n);
   }
 
   save() {

@@ -24,28 +24,9 @@ import { gzipSync } from 'node:zlib';
 //   writeFileSync('./categories.json', JSON.stringify(categories, null, 2));
 // }
 
-const entries = readdirSync('sites/c64audio.com', { withFileTypes: true });
+import { splitDatasetBySites } from './tools';
 
-for (const entry of entries) {
-  if (!entry.isDirectory()) {
-    continue;
-  }
+const { testSet, trainSet } = splitDatasetBySites(process.argv.slice(2));
 
-  const features = JSON.parse(
-    readFileSync(`./sites/c64audio.com/${entry.name}/features.json`, 'utf-8')
-  );
-  const url = features.url;
-  const contentText = readFileSync(`${features.contentText}`, 'utf-8');
-  const openGraph = readFileSync(`${features.openGraph}`, 'utf-8');
-
-  const text = `
-  ${url}
-  ${openGraph}
-  ${contentText}
-  `;
-
-  console.time('gzip');
-  const gzipped = gzipSync(text);
-  console.timeEnd('gzip');
-  console.log(gzipped.length);
-}
+console.log('testSet', testSet.length);
+console.log('trainSet', trainSet.length);
