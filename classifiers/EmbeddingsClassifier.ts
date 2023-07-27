@@ -17,7 +17,7 @@ function findOg(openGraph, key) {
 export class EmbeddingsClassifier extends BaseClassifier {
   static MODEL_NAME = 'emb-ada-002';
   static PRICE = 0.0001;
-  static MAX_LENGTH = 8191 * 4;
+  static MAX_LENGTH = 8191 * 3;
 
   private store: FaissStore;
 
