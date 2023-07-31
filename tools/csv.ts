@@ -16,8 +16,7 @@ for (const pageFeatures of dataset) {
   const row = {
     url: pageFeatures.url,
     path: pageFeatures.path,
-    classification: pageFeatures.classification['manual-cD'].answer[0],
-    features: page.features,
+    classification: pageFeatures.classification['manual-cD'],
   };
 
   writeStream.write(stringify(row) + '\n');

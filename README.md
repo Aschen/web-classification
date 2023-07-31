@@ -11,6 +11,8 @@
 - remove og:image attributes
 - utiliser embeddings clustering pour trouver les types de pages
 - utiliser le HTML + la structure des noeuds pour l'embeddings
+- remove duplicated content text between pages
+- purger les noeuds HTML de menu (avec les classes)
 
 ## Classification
 

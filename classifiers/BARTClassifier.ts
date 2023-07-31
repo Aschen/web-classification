@@ -23,7 +23,9 @@ export class BARTClassifier extends BaseClassifier {
   }
 
   async init() {
-    this.instance = pipeline(this.task, BARTClassifier.MODEL_NAME);
+    this.instance = pipeline(this.task, BARTClassifier.MODEL_NAME, {
+      quantized: false,
+    });
 
     return this;
   }

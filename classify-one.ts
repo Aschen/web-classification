@@ -17,6 +17,8 @@ import {
   CATEGORIES_C,
   HFClassifier,
   CATEGORIES_D,
+  ReplicateClassifier,
+  ReplicateModels,
 } from './classifiers';
 
 const dir =
@@ -27,32 +29,33 @@ const urL = features.url;
 const openGraph = readFileSync(features.openGraph, 'utf-8');
 const contentText = readFileSync(features.contentText, 'utf-8');
 
-const gptClassifier = new GPTClassifier(
-  GPTModels.GPT35,
-  CATEGORIES_C,
-  PROMPT_B2,
+// const gptClassifier = new GPTClassifier(
+//   GPTModels.GPT35,
+//   CATEGORIES_C,
+//   PROMPT_B2,
+//   {
+//     force: true,
+//   }
+// );
+// await gptClassifier.init();
+
+// const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES_D, {
+//   force: true,
+// });
+// await embeddingsClassifier.init();
+
+const replicateClassifier = new ReplicateClassifier(
+  ReplicateModels.LLAMA2_70b_CHAT,
+  CATEGORIES_D,
+  PROMPT_B,
   {
     force: true,
   }
 );
-await gptClassifier.init();
 
-const embeddingsClassifier = new EmbeddingsClassifier(CATEGORIES_D, {
-  force: true,
-});
-await embeddingsClassifier.init();
+await replicateClassifier.init();
 
-// const bartClassifier = new BARTClassifier(CATEGORIES_B, {
-//   force: true,
-// });
-// await bartClassifier.init();
-
-// const hfClassifier = new HFClassifier(CATEGORIES_C, {
-//   force: true,
-// });
-// await hfClassifier.init();
-
-const result = await embeddingsClassifier.execute({
+const result = await replicateClassifier.execute({
   url: urL,
   contentText,
   openGraph,

@@ -29,6 +29,7 @@ export class HFClassifier extends BaseClassifier {
     const answer: string[] = [];
     const tokens = 0;
     const cost = 0;
+    const now = Date.now();
 
     const text = `
     ${inputs.openGraph}
@@ -49,6 +50,7 @@ export class HFClassifier extends BaseClassifier {
       answer,
       tokens,
       cost,
+      time: Date.now() - now,
     };
   }
 }
