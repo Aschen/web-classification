@@ -31,6 +31,10 @@ export class BARTClassifier extends BaseClassifier {
   }
 
   async execute(inputs: Record<string, any>) {
+    if (!this.instance) {
+      throw new Error('The classifier must be initialized before execution');
+    }
+
     console.log('Retrieve model..');
     const model = await this.instance;
     console.log('Model ready');
@@ -38,6 +42,7 @@ export class BARTClassifier extends BaseClassifier {
     const answer: string[] = [];
     const tokens = 0;
     const cost = 0;
+    const now = Date.now();
 
     const text = `
     ${inputs.openGraph}
@@ -60,6 +65,7 @@ export class BARTClassifier extends BaseClassifier {
       answer,
       tokens,
       cost,
+      time: Date.now() - now,
     };
   }
 }

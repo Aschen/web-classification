@@ -44,18 +44,21 @@ const contentText = readFileSync(features.contentText, 'utf-8');
 // });
 // await embeddingsClassifier.init();
 
-const replicateClassifier = new ReplicateClassifier(
-  ReplicateModels.LLAMA2_70b_CHAT,
-  CATEGORIES_D,
-  PROMPT_B,
-  {
-    force: true,
-  }
-);
+// const replicateClassifier = new ReplicateClassifier(
+//   ReplicateModels.LLAMA2_70b_CHAT,
+//   CATEGORIES_D,
+//   PROMPT_B,
+//   {
+//     force: true,
+//   }
+// );
 
-await replicateClassifier.init();
+// await replicateClassifier.init();
 
-const result = await replicateClassifier.execute({
+const bartClassifier = new BARTClassifier(CATEGORIES_D);
+await bartClassifier.init();
+
+const result = await bartClassifier.execute({
   url: urL,
   contentText,
   openGraph,
