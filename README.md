@@ -22,9 +22,9 @@ TL;DR;
 
 ### Collect webpages
 
-From a list of e-commerce website, collect all the links by using a recursive sitemap scrapper ([SitemapReader.ts](https://github.com/Aschen/web-classification/blob/master/collectors/SitemapReader.ts).
+From a list of e-commerce website, collect all the links by using a recursive sitemap scrapper ([SitemapReader.ts](https://github.com/Aschen/web-classification/blob/master/collectors/SitemapReader.ts)).
 
-Then take a meaningful sample of those links (no need to have 1000 pages containing 1 product), the sample is done by creating a tree from URL parts and collect a fixed number of leafs at each level. ([PageSampler.ts](https://github.com/Aschen/web-classification/blob/master/collectors/PagesSampler.ts)
+Then take a meaningful sample of those links (no need to have 1000 pages containing 1 product), the sample is done by creating a tree from URL parts and collect a fixed number of leafs at each level. ([PageSampler.ts](https://github.com/Aschen/web-classification/blob/master/collectors/PagesSampler.ts))
 
 ### Content extraction
 
@@ -36,7 +36,9 @@ I also save the OpenGraph description when available.
 
 [extracted-html.md](https://github.com/Aschen/web-classification/blob/master/examples/extracted-html.md)
 
-### [GPTClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/GPTClassifier.ts)
+### GPTClassifier
+
+[GPTClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/GPTClassifier.ts)
 
 First I tried with GPT3.5 and GPT4. The categories and the prompt are part of the variable to evaluate the classification methods. ([prompts.ts](https://github.com/Aschen/web-classification/blob/master/classifiers/prompts.ts), [categories.ts](https://github.com/Aschen/web-classification/blob/master/classifiers/categories.ts)
 
@@ -52,7 +54,9 @@ And other set of categories, the B set was the best. (I could try embeddings clu
 
 At the end, it costed me 9$ to classify 1575 web pages with GPT3.5 (of course I had to classify them by hand but I used some tricks so I don't have to dumbly classify all of them)
 
-### [EmbeddingsClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/EmbeddingsClassifier.ts)
+### EmbeddingsClassifier
+
+[EmbeddingsClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/EmbeddingsClassifier.ts)
 
 This classifier use OpenAI Ada2 embeddings to find similarity between categories (with a description) and web pages.
 
