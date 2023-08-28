@@ -123,6 +123,7 @@ Then the model was published on HuggingFace Inference API on Nvidia A10G for 1.3
 The answer were really bad but I think it's because I couldn't send enough context to HF Inference API with default settings and playing with the settings was quite difficult to understand because the limits are related to each others.
 
 <details><summary>Personal todolist<summary/>
+  
 ## Todo
 
 - ignore 404 when scrapping
@@ -153,4 +154,5 @@ The answer were really bad but I think it's because I couldn't send enough conte
 - score classifier: moyenne pondérée
 - matrice de confusion: en dehors de la diagonale = cat moins bien classées
 - type de page correctement detectée par classifier
+
 <details/>
