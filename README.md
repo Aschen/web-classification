@@ -22,23 +22,23 @@ TL;DR;
 
 ### Collect webpages
 
-From a list of e-commerce website, collect all the links by using a recursive sitemap scrapper ([SitemapReader.ts]).
+From a list of e-commerce website, collect all the links by using a recursive sitemap scrapper ([SitemapReader.ts](https://github.com/Aschen/web-classification/blob/master/collectors/SitemapReader.ts).
 
-Then take a meaningful sample of those links (no need to have 1000 pages containing 1 product), the sample is done by creating a tree from URL parts and collect a fixed number of leafs at each level. ([PageSampler.ts])
+Then take a meaningful sample of those links (no need to have 1000 pages containing 1 product), the sample is done by creating a tree from URL parts and collect a fixed number of leafs at each level. ([PageSampler.ts](https://github.com/Aschen/web-classification/blob/master/collectors/PagesSampler.ts)
 
 ### Content extraction
 
 Webpages are HTML and HTML is quite noisy, especially since the raise of Javascript applications. I need to extract a meaningful representation of the webpage content because classification methods (LLM or others) works better and faster with smaller texts.
 
-I'm removing some of the HTML tag then I extract the text representation of the elements. ([HTMLScrapper.ts])
+I'm removing some of the HTML tag then I extract the text representation of the elements. ([HTMLScrapper.ts](https://github.com/Aschen/web-classification/blob/master/scrappers/HTMLScrapper.ts)
 
 I also save the OpenGraph description when available.
 
-[extracted-html.md]
+[extracted-html.md](https://github.com/Aschen/web-classification/blob/master/examples/extracted-html.md)
 
-### [GPTClassifier]
+### [GPTClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/GPTClassifier.ts)
 
-First I tried with GPT3.5 and GPT4. The categories and the prompt are part of the variable to evaluate the classification methods. ([prompts.ts], [categories.ts])
+First I tried with GPT3.5 and GPT4. The categories and the prompt are part of the variable to evaluate the classification methods. ([prompts.ts](https://github.com/Aschen/web-classification/blob/master/classifiers/prompts.ts), [categories.ts](https://github.com/Aschen/web-classification/blob/master/classifiers/categories.ts)
 
 The results were quite good (~85%) and the difference between GPT3.5 and GPT4 was less than 2% but the price of GPT4 is 10 times more expensive!
 
@@ -52,7 +52,7 @@ And other set of categories, the B set was the best. (I could try embeddings clu
 
 At the end, it costed me 9$ to classify 1575 web pages with GPT3.5 (of course I had to classify them by hand but I used some tricks so I don't have to dumbly classify all of them)
 
-### [EmbeddingsClassifier]
+### [EmbeddingsClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/EmbeddingsClassifier.ts)
 
 This classifier use OpenAI Ada2 embeddings to find similarity between categories (with a description) and web pages.
 
@@ -62,7 +62,7 @@ The results are quite bad, around 30-35% success only but the price is 10 times 
 
 ### BART
 
-BART is another LLM than can be used for text classification. I tried either with a local version ([BARTClassifier]) and one from HuggingFace Inference API ([HFClassifier])
+BART is another LLM than can be used for text classification. I tried either with a local version ([BARTClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/BARTClassifier.ts) and one from HuggingFace Inference API ([HFClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/HFClassifier.ts)
 
 The results were quite bad, less than 20% and I encountered few limitation:
 
@@ -77,9 +77,9 @@ When I chained GPT3.5 + GPT3.5, I had 91% of good answers (compare to 85% with o
 
 When I chained embeddings + embeddings or embeddings + GPT3.5, I didn't had better results.
 
-[FunnelClassifier]
+[FunnelClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/FunnelClassifier.ts)
 
-### GzipClassifier
+### [GzipClassifier](https://github.com/Aschen/web-classification/blob/master/classifiers/GzipClassifier.ts)
 
 Compression algorithme works with the statistical distribution of similarity between texts so then can also be used to tell if a text is similar to another.
 
