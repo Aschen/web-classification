@@ -16,7 +16,7 @@ TL;DR;
 
 - GPT3.5 is above all the other LLM in term of precision and quality/price ratio
 - a mix of GPT3.5 and Gzip is to me the best classification method in term of accuracy/price
-- the web is a complete mess and praise browser developer because they have to deal daily with the bad HTML
+- the web is a complete mess and praise browser developers because they have to deal daily with the bad HTML
 
 ## Main challenges
 
